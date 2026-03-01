@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA NAV</title>
+
+<style>
+body {
+  margin:0;
+  background:black;
+  overflow:hidden;
+  font-family: Impact, sans-serif;
+}
+
+#map {
+  height:100vh;
+  width:100%;
+  filter: brightness(0.7);
+}
+
+#speedometer {
+  position:absolute;
+  bottom:40px;
+  right:40px;
+  color:white;
+  font-size:40px;
+  text-shadow:0 0 10px lime;
+}
+
+.circle {
+  border-radius:50%;
+  width:300px !important;
+  height:300px !important;
+  position:absolute !important;
+  top:20px;
+  right:20px;
+  overflow:hidden;
+  border:5px solid white;
+}
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+<div id="speedometer">0 km/h</div>
+
+<script>
+let map;
+let watchId;
+let lastPosition;
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 15,
+    center: { lat: 0, lng: 0 },
+    styles: [
+      { elementType: "geometry", stylers: [{ color: "#1d1d1d" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] }
+    ]
+  });
+
+  watchId = navigator.geolocation.watchPosition(updatePosition);
+}
+
+function updatePosition(position) {
+  const pos = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude
+  };
+
+  map.setCenter(pos);
+
+  if (lastPosition) {
+    let speed = position.coords.speed;
+    if (speed !== null) {
+      document.getElementById("speedometer").innerText =
+        Math.round(speed * 3.6) + " km/h";
+    }
+  }
+
+  lastPosition = pos;
+}
+
+function toggleCircle() {
+  document.getElementById("map").classList.toggle("circle");
+}
+</script>
+
+<script async
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkqeuxOji_9PasW1ua0S3mVo55ytiSPBY&callback=initMap">
+</script>
+
+<button onclick="toggleCircle()" 
+style="position:absolute;top:20px;left:20px;z-index:999;">
+MiniMap
+</button>
+
+</body>
+</html>
